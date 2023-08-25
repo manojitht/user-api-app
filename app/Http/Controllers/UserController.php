@@ -163,22 +163,35 @@ class UserController extends Controller
 
 
     public function login(Request $request){
-        $email = $request->input('email');
-        $password = $request->input('password');
 
-        $user = User::where("email", $email)->first();
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        if(!Hash::check($password, $user->password)){
+        if($validator->fails()){
             return response()->json([
-                'status' => 404,
-                'message' => 'Oops! Entered credentials are invalid.'
-            ], 404);
-        }
-        else{
-            return response()->json([
-                'status' => 200,
-                'message' => 'Logged in successfully!'
-            ], 200);
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        } else {
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            $user = User::where("email", $email)->first();
+
+            if(!Hash::check($password, $user->password)){
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Oops! Entered credentials are invalid.'
+                ], 404);
+            }
+            else{
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Logged in successfully!'
+                ], 200);
+            }
         }
 
     }
