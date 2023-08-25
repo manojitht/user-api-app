@@ -28,7 +28,7 @@ class UserController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function register(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:191',
             'email' => 'required|email',
@@ -51,7 +51,7 @@ class UserController extends Controller
                 'phone' => $request->phone,
                 'technologies' => $request->technologies,
                 'description' => $request->description,
-                'password' => md5($request->password),
+                'password' => Hash::make(($request->password))
             ]);
 
             if($user){
@@ -142,37 +142,45 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request) {
+    public function destroy($id){
 
-        $validator = Validator::make($request->all(),
-            [
-                "email" => "required|email",
-                "password" => "required"
-            ]
-        );
-
-        if($validator->fails()) {
-            return response()->json(["status" => "failed", "validation_error" => $validator->errors()]);
-        }
-
-        // check if entered email exists in db
-        $email_status = User::where("email", $request->email)->first();
-
-        // if email exists then we will check password for the same email
-        if(!is_null($email_status)) {
-            $password_status = User::where("email", $request->email)->where("password", md5($request->password))->first();
-
-            // if password is correct
-            if(!is_null($password_status)) {
-                $user = $this->userDetail($request->email);
-                return response()->json(["status" => $this->status_code, "success" => true, "message" => "You have logged in successfully", "data" => $user]);
-            }
-            else {
-                return response()->json(["status" => "failed", "success" => false, "message" => "Unable to login. Incorrect password."]);
-            }
+        $user = User::find($id);
+        if($user){
+            $user->delete();
+            return response()->json([
+                'status' => 200,
+                'message' => 'User successfully deleted!'
+            ], 200);
         }
         else {
-            return response()->json(["status" => "failed", "success" => false, "message" => "Unable to login. Email doesn't exist."]);
+            return response()->json([
+                'status' => 404,
+                'message' => 'Oops! no data found for the user to delete...'
+            ], 404);
         }
     }
+
+
+
+    public function login(Request $request){
+        $email = $request->input('email');
+        $password = $request->input('password');
+
+        $user = User::where("email", $email)->first();
+
+        if(!Hash::check($password, $user->password)){
+            return response()->json([
+                'status' => 404,
+                'message' => 'Oops! Entered credentials are invalid.'
+            ], 404);
+        }
+        else{
+            return response()->json([
+                'status' => 200,
+                'message' => 'Logged in successfully!'
+            ], 200);
+        }
+
+    }
+
 }
