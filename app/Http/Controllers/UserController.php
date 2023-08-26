@@ -69,13 +69,13 @@ class UserController extends Controller
         }
     }
 
-    public function show($id){
+    public function view($id){
 
         $user = User::find($id);
         if($user){
             return response()->json([
                 'status' => 200,
-                'student' => $user
+                'user' => $user
             ], 200);
         }
         else {
@@ -92,7 +92,7 @@ class UserController extends Controller
         if($user){
             return response()->json([
                 'status' => 200,
-                'student' => $user
+                'user' => $user
             ], 200);
         }
         else {
@@ -142,7 +142,7 @@ class UserController extends Controller
         }
     }
 
-    public function destroy($id){
+    public function delete($id){
 
         $user = User::find($id);
         if($user){
