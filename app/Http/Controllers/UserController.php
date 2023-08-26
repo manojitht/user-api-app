@@ -171,9 +171,8 @@ class UserController extends Controller
 
         if($validator->fails()){
             return response()->json([
-                'status' => 422,
                 'errors' => $validator->messages()
-            ], 422);
+            ]);
         } else {
             $email = $request->input('email');
             $password = $request->input('password');
@@ -182,13 +181,23 @@ class UserController extends Controller
 
             if(!Hash::check($password, $user->password)){
                 return response()->json([
-                    'status' => 404,
+                    'status' => 401,
                     'message' => 'Oops! Entered credentials are invalid.'
-                ], 404);
+                ], 401);
             }
             else{
+
+                $token = $user->createToken($user->email.'_Token')->plainTextToken;
+
                 return response()->json([
                     'status' => 200,
+                    'userid' => $user->id,
+                    'username' => $user->name,
+                    'useremail' => $user->email,
+                    'userphone' => $user->phone,
+                    'usertechnologies' => $user->technologies,
+                    'userdescription' => $user->description,
+                    'token' => $token,
                     'message' => 'Logged in successfully!'
                 ], 200);
             }
