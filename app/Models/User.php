@@ -17,6 +17,8 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    //  creating the model's data fields in db
     protected $fillable = [
         'name',
         'email',

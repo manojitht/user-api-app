@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-
+    // check for the users are ther in db
     public function index(){
 
         $users = User::all();
@@ -28,6 +28,7 @@ class UserController extends Controller
         }
     }
 
+    // register the user function code with validation
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:191',
@@ -69,6 +70,7 @@ class UserController extends Controller
         }
     }
 
+    // view user function code to see the appropriate user's details in my profile page
     public function view($id){
 
         $user = User::find($id);
@@ -86,6 +88,7 @@ class UserController extends Controller
         }
     }
 
+    // edit function code to edit the details of user
     public function edit($id){
 
         $user = User::find($id);
@@ -103,6 +106,7 @@ class UserController extends Controller
         }
     }
 
+    // update function code to update the user data in db
     public function update(Request $request, int $id){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:191',
@@ -142,6 +146,7 @@ class UserController extends Controller
         }
     }
 
+    // delete function code to remove the user record from db
     public function delete($id){
 
         $user = User::find($id);
@@ -160,8 +165,7 @@ class UserController extends Controller
         }
     }
 
-
-
+    // login function code for the user
     public function login(Request $request){
 
         $validator = Validator::make($request->all(), [
